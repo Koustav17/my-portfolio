@@ -13,6 +13,7 @@ var validator = require('express-validator');
 var index = require('./routes/index');
 var admin = require('./routes/admin');
 
+var auth = require('./middleware/authenticate');
 var app = express();
 
 // view engine setup
@@ -28,20 +29,24 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.set('trust proxy', 1) // trust first proxy
-app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true }
-}));
-
 app.use(validator());
-
+app.use(session({
+    secret: 'top secret',
+    saveUninitialized:false,
+    resave: false,
+    cookie: { maxAge: 30 * 24 * 60 * 1000}
+   }));
+app.use(auth.authenticated);
+//app.set('trust proxy', 1) // trust first proxy
+// app.use(session({
+//   secret: 'keyboard cat',
+//   resave: false,
+//   saveUninitialized: true,
+//   cookie: { secure: true }
+// }));
+//app.use('/admin', admin);
 app.use('/', index);
-app.use('/admin', admin);
-
+app.use('/admin',auth.requireAuthentication,admin); 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

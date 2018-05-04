@@ -1,8 +1,23 @@
 var express = require('express');
 var router = express.Router();
 var validator = require('express-validator');
-//const { checkSchema } = require('express-validator/check');
 
+var myPortfolio= {
+blog: [{
+  title:'Hello World' ,
+  description: 'This is my blog for my portfolio page' ,
+  content:'This is my blog for my portfolio page',
+  tags:'about,hi'
+},{
+  title:'Welcome to Express Js',
+  description:'Express js is web application development framework for Node js',
+  content:'Express js is web application development framework for Node js',
+  tags:'nodejs,express'
+}],
+project:[{
+githubUrl:'https://github.com/Koustav17/my-portfolio',
+}],
+}
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'My Portfolio' });
@@ -20,22 +35,22 @@ router.get('/contact', function(req, res, next) {
 
 /* GET blog page. */
 router.get('/blog', function(req, res, next) {
-  res.render('blog', { layout: 'layout-blog', title: 'My blog list' });
+  res.render('blog', { layout: 'layout-blog', title: 'My blog list',data:myPortfolio});
 });
 
 /* GET blog detail page. */
 router.get('/blog/:name', function(req, res, next) {
-  res.render('blog-detail', { layout: 'layout-blog', title: 'Blog Detail Page' });
+  res.render('blog-detail', { layout: 'layout-blog', title: 'Blog Detail Page', data:myPortfolio });
 });
 
 /* GET project list page. */
 router.get('/project', function(req, res, next) {
-  res.render('project', { title: 'My project list' });
+  res.render('project', { title: 'My project list' , data:myPortfolio});
 });
 
 /* GET project detail page. */
 router.get('/project/:project-name', function(req, res, next) {
-  res.render('project-details', { title: 'Project Detail Page' });
+  res.render('project-details', { title: 'Project Detail Page', data:myPortfolio });
 });
 
 /* GET my resume pdf. */
@@ -80,10 +95,15 @@ router.post('/login', function(req, res, next) {
     }
 
     if(found){
-      req.session.isLoggedIn = true;
+      req.session.isAuthenticated  = true;
       req.session.user = {'email': req.body.email};
       res.locals.session = req.session;
-      res.render('profile', {title: 'Project Detail Page' });
+      if(req.session.oldUrl){
+        res.redirect('/admin',req.session.oldUrl);
+      }else{
+        res.redirect('/admin/dashboard');
+      }
+      //res.render('profile', {title: 'Project Detail Page' });
     }else{
       var messages = [];
       messages.push({msg:'Invalid login credentials'});
@@ -91,5 +111,12 @@ router.post('/login', function(req, res, next) {
     }
   }
 });
+
+router.get('/logout', function(req, res, next) {
+  req.session.isAuthenticated = false;
+  delete req.session.user;
+  res.redirect('/');
+});
+
 
 module.exports = router;

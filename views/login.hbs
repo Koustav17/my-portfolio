@@ -1,6 +1,8 @@
 
 <form class="form-signin" action="/login" method="POST">
+
        <img class="mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+
        
       {{#if hasErrors }}
           <div class="alert alert-danger">
@@ -10,8 +12,7 @@
               {{/each}}
           </div>
       {{/if}}
-
-     
+      <link rel="icon" href="/images/favicon.ico">
       <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
       <label for="inputEmail" class="sr-only">Email address</label>
       <input type="email" name="email" class="form-control" placeholder="Email address" autofocus>
